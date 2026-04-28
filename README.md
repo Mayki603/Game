@@ -48,10 +48,3 @@ Increasing difficulty over time
 
 Technologies
 
-The project was developed using the following technologies:
-
-C#
-
-Unity (2D)
-
-Visual Studio Code
