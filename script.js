@@ -1,0 +1,327 @@
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+
+const walkImage = new Image();
+walkImage.src = 'assets/WALK.png';
+
+const runImage = new Image();
+runImage.src = 'assets/RUN.png';
+
+const idleImage = new Image();
+idleImage.src = 'assets/IDLE.png';
+
+const jumpImage = new Image();
+jumpImage.src = 'assets/JUMP.png';
+
+const runJumpImage = new Image();
+runJumpImage.src = 'assets/RUN_JUMP.png';
+
+const itemImages = [];
+const itemData = [
+    { src: 'assets/canned_food.png', points: 1, weight: 60 },
+    { src: 'assets/sushi.png', points: 2, weight: 25 },
+    { src: 'assets/shrimp.png', points: 3, weight: 10 },
+    { src: 'assets/steak.png', points: 5, weight: 5 }
+];
+
+itemData.forEach(data => {
+    const img = new Image();
+    img.src = data.src;
+    itemImages.push(img);
+});
+
+const cat = {
+    x: window.innerWidth / 2,
+    y: 0,
+    sourceWidth: 0,
+    sourceHeight: 0,
+    width: 0,
+    height: 0,
+    walkSpeed: 2.5,
+    runSpeed: 7,
+    dx: 0,
+    dy: 0,
+    gravity: 0.35,
+    jumpForce: -10,
+    isJumping: false,
+    frameX: 0,
+    walkFrames: 12,
+    runFrames: 8,
+    idleFrames: 8,
+    jumpFrames: 3,
+    runJumpFrames: 3,
+    frameTimer: 0,
+    walkInterval: 6,
+    runInterval: 5,
+    idleInterval: 15,
+    jumpInterval: 12,
+    runJumpInterval: 20,
+    facingLeft: true,
+    scale: 4,
+    isRunning: false,
+    currentImg: idleImage
+};
+
+const items = [];
+let score = 0;
+let itemSpawnTimer = 0;
+let itemSpawnInterval = 90;
+
+let imagesLoaded = 0;
+const totalImages = 5 + itemData.length;
+
+function init() {
+    imagesLoaded++;
+    if (imagesLoaded === totalImages) {
+        resizeCanvas();
+        gameLoop();
+    }
+}
+
+function onImageError(e) {
+    alert("Помилка! Не знайдено файл: " + e.target.src);
+}
+
+walkImage.onload = init; walkImage.onerror = onImageError;
+runImage.onload = init; runImage.onerror = onImageError;
+idleImage.onload = init; idleImage.onerror = onImageError;
+jumpImage.onload = init; jumpImage.onerror = onImageError;
+runJumpImage.onload = init; runJumpImage.onerror = onImageError;
+itemImages.forEach(img => { img.onload = init; img.onerror = onImageError; });
+
+function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    ctx.imageSmoothingEnabled = false;
+    
+    if (idleImage.height > 0) {
+        cat.sourceHeight = idleImage.height;
+        cat.height = cat.sourceHeight * cat.scale;
+        if (!cat.isJumping) {
+            cat.y = canvas.height - 20 - cat.height;
+        }
+    }
+}
+
+window.addEventListener('resize', resizeCanvas);
+
+const keys = {
+    ArrowLeft: false,
+    ArrowRight: false,
+    a: false,
+    d: false,
+    Control: false,
+    Space: false
+};
+
+window.addEventListener('keydown', (e) => {
+    if (keys.hasOwnProperty(e.key)) keys[e.key] = true;
+    if (e.code === 'Space') keys.Space = true;
+});
+
+window.addEventListener('keyup', (e) => {
+    if (keys.hasOwnProperty(e.key)) keys[e.key] = false;
+    if (e.code === 'Space') keys.Space = false;
+});
+
+function createItem() {
+    let totalWeight = 0;
+    for (let i = 0; i < itemData.length; i++) {
+        totalWeight += itemData[i].weight;
+    }
+
+    let randomNum = Math.random() * totalWeight;
+    let selectedIndex = 0;
+
+    for (let i = 0; i < itemData.length; i++) {
+        randomNum -= itemData[i].weight;
+        if (randomNum <= 0) {
+            selectedIndex = i;
+            break;
+        }
+    }
+
+    const img = itemImages[selectedIndex];
+    const itemScale = 3;
+    const item = {
+        img: img,
+        points: itemData[selectedIndex].points,
+        x: Math.random() * (canvas.width - img.width * itemScale),
+        y: -img.height * itemScale,
+        width: img.width * itemScale,
+        height: img.height * itemScale,
+        speed: 1.5 + Math.random() * 1.2
+    };
+    items.push(item);
+}
+
+function updateItems() {
+    itemSpawnTimer++;
+    if (itemSpawnTimer >= itemSpawnInterval) {
+        createItem();
+        itemSpawnTimer = 0;
+    }
+
+    for (let i = items.length - 1; i >= 0; i--) {
+        const item = items[i];
+        item.y += item.speed;
+
+        if (item.y > canvas.height) {
+            items.splice(i, 1);
+            continue;
+        }
+
+        if (cat.x < item.x + item.width &&
+            cat.x + cat.width > item.x &&
+            cat.y < item.y + item.height &&
+            cat.y + cat.height > item.y) {
+            score += item.points;
+            items.splice(i, 1);
+        }
+    }
+}
+
+function drawItems() {
+    items.forEach(item => {
+        ctx.drawImage(item.img, item.x, item.y, item.width, item.height);
+    });
+}
+
+function drawUI() {
+    ctx.fillStyle = 'black';
+    ctx.font = '30px Arial';
+    ctx.fillText('Очки: ' + score, 20, 40);
+}
+
+function update() {
+    cat.isRunning = keys.Control;
+    let isMoving = false;
+
+    if (keys.ArrowLeft || keys.a) {
+        cat.dx = -(cat.isRunning ? cat.runSpeed : cat.walkSpeed);
+        cat.facingLeft = true;
+        isMoving = true;
+    } else if (keys.ArrowRight || keys.d) {
+        cat.dx = (cat.isRunning ? cat.runSpeed : cat.walkSpeed);
+        cat.facingLeft = false;
+        isMoving = true;
+    } else {
+        cat.dx = 0;
+        isMoving = false;
+    }
+
+    if (keys.Space && !cat.isJumping) {
+        cat.dy = cat.jumpForce;
+        cat.isJumping = true;
+        cat.frameX = 0;
+    }
+
+    cat.x += cat.dx;
+    cat.y += cat.dy;
+    cat.dy += cat.gravity;
+
+    if (cat.x < 0) cat.x = 0;
+    if (cat.x + cat.width > canvas.width) cat.x = canvas.width - cat.width;
+
+    let nextImg;
+    let totalFrames;
+    let currentInterval;
+
+    if (cat.isJumping) {
+        if (cat.isRunning) {
+            nextImg = runJumpImage;
+            totalFrames = cat.runJumpFrames;
+            currentInterval = cat.runJumpInterval;
+        } else {
+            nextImg = jumpImage;
+            totalFrames = cat.jumpFrames;
+            currentInterval = cat.jumpInterval;
+        }
+    } else if (isMoving) {
+        nextImg = cat.isRunning ? runImage : walkImage;
+        totalFrames = cat.isRunning ? cat.runFrames : cat.walkFrames;
+        currentInterval = cat.isRunning ? cat.runInterval : cat.walkInterval;
+    } else {
+        nextImg = idleImage;
+        totalFrames = cat.idleFrames;
+        currentInterval = cat.idleInterval;
+    }
+
+    if (cat.currentImg !== nextImg) {
+        cat.currentImg = nextImg;
+        cat.frameX = 0;
+        cat.frameTimer = 0;
+    }
+
+    cat.sourceWidth = cat.currentImg.width / totalFrames;
+    cat.sourceHeight = cat.currentImg.height;
+    cat.width = cat.sourceWidth * cat.scale;
+    cat.height = cat.sourceHeight * cat.scale;
+
+    const floorY = canvas.height - 20 - cat.height;
+    if (cat.y >= floorY) {
+        cat.y = floorY;
+        cat.dy = 0;
+        cat.isJumping = false;
+    }
+
+    cat.frameTimer++;
+    if (cat.frameTimer >= currentInterval) {
+        if (cat.isJumping) {
+            if (cat.frameX < totalFrames - 1) {
+                cat.frameX++;
+            }
+        } else {
+            cat.frameX = (cat.frameX + 1) % totalFrames;
+        }
+        cat.frameTimer = 0;
+    }
+
+    updateItems();
+}
+
+function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    drawItems();
+
+    ctx.save();
+    
+    if (cat.facingLeft) {
+        ctx.drawImage(
+            cat.currentImg,
+            cat.frameX * cat.sourceWidth,
+            0,
+            cat.sourceWidth,
+            cat.sourceHeight,
+            cat.x,
+            cat.y,
+            cat.width,
+            cat.height
+        );
+    } else {
+        ctx.translate(cat.x + cat.width / 2, cat.y + cat.height / 2);
+        ctx.scale(-1, 1);
+        ctx.drawImage(
+            cat.currentImg,
+            cat.frameX * cat.sourceWidth,
+            0,
+            cat.sourceWidth,
+            cat.sourceHeight,
+            -cat.width / 2,
+            -cat.height / 2,
+            cat.width,
+            cat.height
+        );
+    }
+    
+    ctx.restore();
+    
+    drawUI();
+}
+
+function gameLoop() {
+    update();
+    draw();
+    requestAnimationFrame(gameLoop);
+}
