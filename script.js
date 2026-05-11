@@ -65,7 +65,7 @@ const cat = {
 const items = [];
 let score = 0;
 let itemSpawnTimer = 0;
-let itemSpawnInterval = 90;
+let itemSpawnInterval = 160;
 
 let imagesLoaded = 0;
 const totalImages = 5 + itemData.length;
@@ -150,7 +150,7 @@ function createItem() {
         y: -img.height * itemScale,
         width: img.width * itemScale,
         height: img.height * itemScale,
-        speed: 1.5 + Math.random() * 1.2
+        speed: 0.8 + Math.random() * 0.7
     };
     items.push(item);
 }
