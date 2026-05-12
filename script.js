@@ -31,7 +31,7 @@ const cat = {
     gravity: 0.35, jumpForce: -10, isJumping: false,
     frameX: 0, frameTimer: 0,
     walkFrames: 12, runFrames: 8, idleFrames: 8, jumpFrames: 3, runJumpFrames: 3,
-    sleepFrames: 8, wakeFrames: 2, lickFrames: 14,
+    sleepFrames: 8, wakeFrames: 2, lickFrames: 15,
     walkInterval: 6, runInterval: 5, idleInterval: 15, jumpInterval: 12,
     runJumpInterval: 20, sleepInterval: 20, wakeInterval: 10, lickInterval: 10,
     facingLeft: true, scale: 4, isRunning: false, currentImg: sleepImage
@@ -67,12 +67,8 @@ function init() {
     }
 }
 
-function onImageError(e) {
-    alert("Помилка! Не знайдено файл: " + e.target.src);
-}
-
-gameImages.forEach(img => { img.onload = init; img.onerror = onImageError; });
-itemImages.forEach(img => { img.onload = init; img.onerror = onImageError; });
+gameImages.forEach(img => { img.onload = init; });
+itemImages.forEach(img => { img.onload = init; });
 
 function resizeCanvas() {
     canvas.width = window.innerWidth;
@@ -159,12 +155,11 @@ function update() {
 
     if (gameState === 'MENU') {
         cat.currentImg = sleepImage;
-        const totalFrames = cat.sleepFrames;
+        const totalFrames = cat.sleepFrames || 1;
         cat.sourceWidth = cat.currentImg.width / totalFrames;
         cat.sourceHeight = cat.currentImg.height;
         cat.width = cat.sourceWidth * cat.scale;
         cat.height = cat.sourceHeight * cat.scale;
-        
         cat.x = (canvas.width - cat.width) / 2;
         cat.y = canvas.height - 20 - cat.height;
 
@@ -178,12 +173,11 @@ function update() {
 
     if (gameState === 'WAKING') {
         cat.currentImg = wakeImage;
-        const totalFrames = cat.wakeFrames;
+        const totalFrames = cat.wakeFrames || 1;
         cat.sourceWidth = cat.currentImg.width / totalFrames;
         cat.sourceHeight = cat.currentImg.height;
         cat.width = cat.sourceWidth * cat.scale;
         cat.height = cat.sourceHeight * cat.scale;
-        
         cat.x = (canvas.width - cat.width) / 2;
         cat.y = canvas.height - 20 - cat.height;
 
@@ -202,12 +196,11 @@ function update() {
 
     if (gameState === 'LICKING') {
         cat.currentImg = lickImage;
-        const totalFrames = cat.lickFrames;
+        const totalFrames = cat.lickFrames || 1;
         cat.sourceWidth = cat.currentImg.width / totalFrames;
         cat.sourceHeight = cat.currentImg.height;
         cat.width = cat.sourceWidth * cat.scale;
         cat.height = cat.sourceHeight * cat.scale;
-        
         cat.x = (canvas.width - cat.width) / 2;
         cat.y = canvas.height - 20 - cat.height;
 
