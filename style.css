@@ -7,9 +7,55 @@
 body {
     overflow: hidden;
     background-color: #ffffff;
+    font-family: Arial, sans-serif;
 }
 
 canvas {
     display: block;
     image-rendering: pixelated;
+}
+
+#ui-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: none;
+    z-index: 10;
+}
+
+#start-screen {
+    text-align: center;
+    pointer-events: auto;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 50px 80px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+#start-screen h1 {
+    font-size: 4rem;
+    margin-bottom: 30px;
+    color: #333;
+}
+
+#start-btn {
+    padding: 15px 40px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    border: none;
+    border-radius: 10px;
+    background-color: #ff9900;
+    color: white;
+    font-weight: bold;
+    transition: transform 0.2s, background-color 0.2s;
+}
+
+#start-btn:hover {
+    background-color: #e68a00;
+    transform: scale(1.05);
 }

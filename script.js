@@ -69,6 +69,19 @@ let itemSpawnInterval = 160;
 
 let imagesLoaded = 0;
 const totalImages = 5 + itemData.length;
+let gameActive = false;
+
+const startScreen = document.getElementById('start-screen');
+const startBtn = document.getElementById('start-btn');
+
+startBtn.addEventListener('click', () => {
+    gameActive = true;
+    startScreen.style.display = 'none';
+    score = 0;
+    items.length = 0;
+    cat.x = canvas.width / 2;
+    cat.facingLeft = true;
+});
 
 function init() {
     imagesLoaded++;
@@ -188,12 +201,31 @@ function drawItems() {
 }
 
 function drawUI() {
+    if (!gameActive) return;
     ctx.fillStyle = 'black';
     ctx.font = '30px Arial';
     ctx.fillText('Очки: ' + score, 20, 40);
 }
 
 function update() {
+    if (!gameActive) {
+        cat.currentImg = idleImage;
+        cat.sourceWidth = cat.currentImg.width / cat.idleFrames;
+        cat.sourceHeight = cat.currentImg.height;
+        cat.width = cat.sourceWidth * cat.scale;
+        cat.height = cat.sourceHeight * cat.scale;
+        
+        const floorY = canvas.height - 20 - cat.height;
+        cat.y = floorY;
+
+        cat.frameTimer++;
+        if (cat.frameTimer >= cat.idleInterval) {
+            cat.frameX = (cat.frameX + 1) % cat.idleFrames;
+            cat.frameTimer = 0;
+        }
+        return;
+    }
+
     cat.isRunning = keys.Control;
     let isMoving = false;
 
@@ -283,7 +315,9 @@ function update() {
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
-    drawItems();
+    if (gameActive) {
+        drawItems();
+    }
 
     ctx.save();
     
