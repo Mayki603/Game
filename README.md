@@ -1,50 +1,33 @@
-Lazy Cat
-Overview
+**Lazy Cat** — це двовимірна аркадна браузерна гра, розроблена з використанням HTML5 Canvas API та базового JavaScript (Vanilla JS). Проєкт демонструє реалізацію власного ігрового рушія, який включає систему станів персонажа, фізику руху (гравітація, імпульс), колізії об'єктів та динамічну генерацію елементів на основі ймовірностей.
 
-Lazy Cat is a simple 2D arcade game developed using Unity and C#. The player controls a cat positioned at the bottom of the screen and must catch falling items to gain points while avoiding objects that decrease the score.
+##  Опис ігрового процесу
 
-The game focuses on basic gameplay mechanics such as movement, random object spawning, collision detection, and score tracking.
+Гравець керує персонажем, який знаходиться в нижній частині екрана. Основне завдання — збір об'єктів (їжі), що генеруються у верхній частині ігрового поля і падають вниз під впливом швидкості. Гра має вбудовану систему станів (`State Machine`), яка обробляє плавні переходи анімації на старті (Сон -> Пробудження -> Вмивання -> Ігровий процес).
 
-Gameplay
+Збір різних об'єктів приносить різну кількість балів. Об'єкти генеруються з різною частотою залежно від їхньої «ваги» (ймовірності появи).
 
-During the game, different objects fall from the top of the screen. The player moves the cat horizontally to catch useful items and avoid harmful ones.
+## ⌨️ Керування
 
-Positive items increase the score:
+Система управління підтримує обробку базових рухів, прискорення та стрибків:
 
-Chicken (+10 points)
+* **[A]** або **[Стрілка вліво]** — рух ліворуч.
+* **[D]** або **[Стрілка вправо]** — рух праворуч.
+* **[Space] (Пробіл)** — стрибок (застосування вертикального імпульсу для подолання гравітації).
+* **[Ctrl] + [Кнопка руху]** — спринт (прискорений рух зі зміною анімації).
+* **[Ctrl] + [Space] + [Кнопка руху]** — стрибок під час спринту.
 
-Fish (+15 points)
+##  Система нарахування балів та ймовірності
 
-Yarn ball (+5 points)
+Генерація об'єктів налаштована за допомогою алгоритму зваженої ймовірності. Чим більша цінність об'єкта, тим рідше він з'являється на ігровому полотні:
 
-Milk (+20 points)
+* 🥫 **Консерва:** 1 бал (Ймовірність генерації: 60%)
+* 🍣 **Суші:** 2 бали (Ймовірність генерації: 25%)
+* 🍤 **Креветка:** 3 бали (Ймовірність генерації: 10%)
+* 🥩 **Стейк:** 5 балів (Ймовірність генерації: 5%)
 
-Negative items decrease the score:
+### Структура проєкту:
 
-Broom (-10 points)
-
-Broccoli (-5 points)
-
-Shoe (-15 points)
-
-As the game progresses, the falling speed of the objects gradually increases, making the game more challenging.
-
-Controls
-
-The player uses the keyboard to control the cat.
-
-Left Arrow — move the cat to the left
-Right Arrow — move the cat to the right
-
-Features
-
-Simple and intuitive gameplay
-
-Random spawning of objects
-
-Score system
-
-Increasing difficulty over time
-
-Technologies
-
+* `index.html` — основний файл розмітки.
+* `style.css` — файл стилів (відповідає за повноекранне відображення, pixel-perfect рендеринг Canvas та анімацію інтерфейсу).
+* `script.js` — основний файл ігрової логіки.
+* `/assets/` — директорія зі спрайт-листами анімацій персонажа та статичними зображеннями об'єктів.
