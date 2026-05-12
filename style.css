@@ -35,6 +35,13 @@ canvas {
     padding: 50px 80px;
     border-radius: 20px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    opacity: 1;
+    transition: opacity 1.5s ease-out;
+}
+
+#start-screen.fade-out {
+    opacity: 0;
+    pointer-events: none;
 }
 
 #start-screen h1 {
