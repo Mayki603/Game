@@ -28,13 +28,16 @@ canvas {
     z-index: 10;
 }
 
-#start-screen {
+#start-screen, #stats-screen {
     text-align: center;
     pointer-events: auto;
-    background: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.95);
     padding: 50px 80px;
     border-radius: 20px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+#start-screen {
     opacity: 1;
     transition: opacity 1.5s ease-out;
 }
@@ -50,7 +53,7 @@ canvas {
     color: #333;
 }
 
-#start-btn {
+#start-btn, #exit-btn, #restart-btn {
     padding: 15px 40px;
     font-size: 1.5rem;
     cursor: pointer;
@@ -62,7 +65,44 @@ canvas {
     transition: transform 0.2s, background-color 0.2s;
 }
 
-#start-btn:hover {
+#exit-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: 1rem;
+    padding: 10px 20px;
+    background-color: #ff4444;
+    pointer-events: auto;
+}
+
+#restart-btn {
+    margin-top: 20px;
+    background-color: #44bb44;
+}
+
+#start-btn:hover, #restart-btn:hover {
     background-color: #e68a00;
     transform: scale(1.05);
+}
+
+#exit-btn:hover {
+    background-color: #cc0000;
+    transform: scale(1.05);
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 10px 0;
+    font-size: 1.5rem;
+    border-bottom: 1px solid #eee;
+    padding: 10px 0;
+    width: 300px;
+}
+
+.stat-item img {
+    width: 48px;
+    height: 48px;
+    image-rendering: pixelated;
 }
