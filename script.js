@@ -42,6 +42,10 @@ let score = 0;
 let itemSpawnTimer = 0;
 let itemSpawnInterval = 160;
 
+// Змінні для таймера
+let startTime = 0;
+let elapsedTime = 0;
+
 let imagesLoaded = 0;
 const gameImages = [walkImage, runImage, idleImage, jumpImage, runJumpImage, sleepImage, wakeImage, lickImage];
 const totalImages = gameImages.length + itemData.length;
@@ -144,10 +148,22 @@ function drawItems() {
     items.forEach(item => { ctx.drawImage(item.img, item.x, item.y, item.width, item.height); });
 }
 
+function formatTime(ms) {
+    let seconds = Math.floor(ms / 1000);
+    let minutes = Math.floor(seconds / 60);
+    seconds = seconds % 60;
+    return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+}
+
 function drawUI() {
     if (gameState !== 'PLAYING') return;
-    ctx.fillStyle = 'black'; ctx.font = '30px Arial';
+    ctx.fillStyle = 'black'; 
+    ctx.font = 'bold 24px Arial';
+    ctx.textAlign = 'left';
     ctx.fillText('Очки: ' + score, 20, 40);
+    
+    // Відображення таймера
+    ctx.fillText('Час: ' + formatTime(elapsedTime), 20, 75);
 }
 
 function update() {
@@ -216,6 +232,8 @@ function update() {
                 cat.x = (canvas.width - cat.width) / 2;
                 cat.facingLeft = true;
                 cat.frameX = 0;
+                // Запуск відліку часу
+                startTime = Date.now();
             }
             cat.frameTimer = 0;
         }
@@ -223,6 +241,9 @@ function update() {
     }
 
     if (gameState === 'PLAYING') {
+        // Оновлення таймера
+        elapsedTime = Date.now() - startTime;
+
         cat.isRunning = keys.Control;
         let isMoving = false;
 
