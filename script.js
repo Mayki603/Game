@@ -31,7 +31,7 @@ const cat = {
     gravity: 0.35, jumpForce: -10, isJumping: false,
     frameX: 0, frameTimer: 0,
     walkFrames: 12, runFrames: 8, idleFrames: 8, jumpFrames: 3, runJumpFrames: 3,
-    sleepFrames: 0, wakeFrames: 0, lickFrames: 0,
+    sleepFrames: 8, wakeFrames: 2, lickFrames: 14,
     walkInterval: 6, runInterval: 5, idleInterval: 15, jumpInterval: 12,
     runJumpInterval: 20, sleepInterval: 20, wakeInterval: 10, lickInterval: 10,
     facingLeft: true, scale: 4, isRunning: false, currentImg: sleepImage
@@ -62,10 +62,6 @@ startBtn.addEventListener('click', () => {
 function init() {
     imagesLoaded++;
     if (imagesLoaded === totalImages) {
-        if (sleepImage.height > 0) cat.sleepFrames = sleepImage.width / sleepImage.height;
-        if (wakeImage.height > 0) cat.wakeFrames = wakeImage.width / wakeImage.height;
-        if (lickImage.height > 0) cat.lickFrames = lickImage.width / lickImage.height;
-        
         resizeCanvas();
         gameLoop();
     }
@@ -163,11 +159,13 @@ function update() {
 
     if (gameState === 'MENU') {
         cat.currentImg = sleepImage;
-        const totalFrames = cat.sleepFrames || 1;
+        const totalFrames = cat.sleepFrames;
         cat.sourceWidth = cat.currentImg.width / totalFrames;
         cat.sourceHeight = cat.currentImg.height;
         cat.width = cat.sourceWidth * cat.scale;
         cat.height = cat.sourceHeight * cat.scale;
+        
+        cat.x = (canvas.width - cat.width) / 2;
         cat.y = canvas.height - 20 - cat.height;
 
         cat.frameTimer++;
@@ -180,11 +178,13 @@ function update() {
 
     if (gameState === 'WAKING') {
         cat.currentImg = wakeImage;
-        const totalFrames = cat.wakeFrames || 1;
+        const totalFrames = cat.wakeFrames;
         cat.sourceWidth = cat.currentImg.width / totalFrames;
         cat.sourceHeight = cat.currentImg.height;
         cat.width = cat.sourceWidth * cat.scale;
         cat.height = cat.sourceHeight * cat.scale;
+        
+        cat.x = (canvas.width - cat.width) / 2;
         cat.y = canvas.height - 20 - cat.height;
 
         cat.frameTimer++;
@@ -202,11 +202,13 @@ function update() {
 
     if (gameState === 'LICKING') {
         cat.currentImg = lickImage;
-        const totalFrames = cat.lickFrames || 1;
+        const totalFrames = cat.lickFrames;
         cat.sourceWidth = cat.currentImg.width / totalFrames;
         cat.sourceHeight = cat.currentImg.height;
         cat.width = cat.sourceWidth * cat.scale;
         cat.height = cat.sourceHeight * cat.scale;
+        
+        cat.x = (canvas.width - cat.width) / 2;
         cat.y = canvas.height - 20 - cat.height;
 
         cat.frameTimer++;
@@ -218,7 +220,7 @@ function update() {
                 startScreen.style.display = 'none';
                 score = 0;
                 items.length = 0;
-                cat.x = canvas.width / 2;
+                cat.x = (canvas.width - cat.width) / 2;
                 cat.facingLeft = true;
                 cat.frameX = 0;
             }
